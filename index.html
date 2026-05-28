@@ -11,7 +11,21 @@
 <meta name="theme-color" content="#1a1008">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+  @font-face {
+    font-family: 'PFStardust';
+    src: url('PF스타더스트_3_0.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'PFStardust';
+    src: url('PF스타더스트_3_0_Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'PFStardust';
+    src: url('PF스타더스트_3_0_ExtraBold.ttf') format('truetype');
+    font-weight: 900;
+  }
 
   :root {
     --wood-dark: #3d2a1a;
@@ -43,7 +57,7 @@
 
   body {
     background: #1a1008;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'PFStardust', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -106,7 +120,7 @@
     border: 3px solid var(--wood-border);
     box-shadow: inset 1px 1px 0 var(--wood-light), inset -1px -1px 0 var(--wood-dark), 2px 2px 0 var(--wood-border);
     color: var(--text-light);
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'PFStardust', sans-serif;
     font-size: 11px;
     font-weight: 700;
     padding: 5px 10px;
@@ -443,7 +457,7 @@
     border: 2px solid var(--slot-border);
     box-shadow: inset 1px 1px 0 rgba(0,0,0,0.5);
     color: var(--text-light);
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'PFStardust', sans-serif;
     font-size: 12px;
     padding: 5px 8px;
     flex: 1;
@@ -458,7 +472,7 @@
     background: none;
     border: none;
     padding: 2px 6px;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'PFStardust', sans-serif;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -520,7 +534,7 @@
     border: 1px dashed var(--slot-border);
     padding: 3px 8px;
     cursor: pointer;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'PFStardust', sans-serif;
     width: 100%;
     text-align: center;
   }
@@ -552,7 +566,7 @@
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'PFStardust', sans-serif;
     letter-spacing: 1px;
     text-align: center;
     margin-bottom: 14px;
@@ -568,6 +582,31 @@
   .io-row .px-btn { flex: 1; text-align: center; padding: 8px; font-size: 11px; }
   .io-row label.px-btn { display: flex; align-items: center; justify-content: center; }
   #file-input { display: none; }
+
+  /* ── FONT WEIGHT RULES ── */
+  /* 제목·소제목·스킬명 → ExtraBold */
+  .header-title,
+  .detail-skill-name,
+  .skill-name,
+  .edit-section-title,
+  .grade-info-title,
+  .grades-center-label .current-grade-name,
+  .grade-node-label,
+  .skill-grade-badge,
+  .edit-grade-label {
+    font-family: 'PFStardust', sans-serif;
+    font-weight: 900;
+  }
+  /* 달성 조건·설명·힌트 → Regular 픽셀체 */
+  .grade-info-list li,
+  .grade-info-hint,
+  .grades-center-label .current-grade-sub,
+  .px-input,
+  .edit-grades-toggle,
+  .add-cond-btn {
+    font-family: 'PFStardust', sans-serif;
+    font-weight: 400;
+  }
 
   /* ── GRADE COLORS ── */
   [data-grade="0"] { --grade-color: var(--beginner); }
