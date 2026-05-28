@@ -1,10 +1,10 @@
-const CACHE_NAME = 'stats-v2';
+const CACHE_NAME = 'stats-v3';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/stats/',
+  '/stats/index.html',
+  '/stats/manifest.json',
+  '/stats/icon-192.png',
+  '/stats/icon-512.png'
 ];
 
 self.addEventListener('install', e => {
