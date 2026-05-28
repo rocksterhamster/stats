@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>STATS</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="STATS">
+<meta name="theme-color" content="#1a1008">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+  :root {
+    --wood-dark: #3d2a1a;
+    --wood-mid: #6b4423;
+    --wood-light: #8b5e34;
+    --wood-panel: #c8874a;
+    --wood-panel-light: #d9a06a;
+    --wood-border: #2a1a0e;
+    --slot-bg: #5c3820;
+    --slot-border: #3a2010;
+    --slot-inner: #4a2e18;
+    --gold: #f5c842;
+    --gold-glow: #ffe066;
+    --text-light: #f5e6c8;
+    --text-dim: #c4a882;
+    --inactive: #6b5040;
+    --pixel: 2px;
+
+    /* Grade colors */
+    --beginner: #aaaaaa;
+    --lowest: #88cc66;
+    --low: #44aaff;
+    --mid: #aa66ff;
+    --high: #ff8844;
+    --mastery: #f5c842;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1008;
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px 40px;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+  }
+
+  /* ── PIXEL PANEL ── */
+  .panel {
+    background: var(--wood-panel);
+    border: 4px solid var(--wood-border);
+    box-shadow:
+      inset 2px 2px 0 var(--wood-panel-light),
+      inset -2px -2px 0 var(--wood-dark),
+      4px 4px 0 var(--wood-border);
+    image-rendering: pixelated;
+    position: relative;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 2px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    width: 100%;
+    max-width: 480px;
+    padding: 10px 16px 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 2px 2px 0 var(--wood-border), -1px -1px 0 #a07020;
+    letter-spacing: 2px;
+    image-rendering: pixelated;
+  }
+  .header-title span {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 8px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  .header-btns { display: flex; gap: 6px; }
+
+  /* ── PIXEL BUTTON ── */
+  .px-btn {
+    background: var(--wood-mid);
+    border: 3px solid var(--wood-border);
+    box-shadow: inset 1px 1px 0 var(--wood-light), inset -1px -1px 0 var(--wood-dark), 2px 2px 0 var(--wood-border);
+    color: var(--text-light);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: transform 0.05s, box-shadow 0.05s;
+    letter-spacing: 0.5px;
+  }
+  .px-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: inset 1px 1px 0 var(--wood-light), inset -1px -1px 0 var(--wood-dark);
+  }
+  .px-btn.accent {
+    background: #5a3a10;
+    color: var(--gold);
+  }
+  .px-btn.edit-active {
+    background: #8b4513;
+    color: var(--gold);
+    box-shadow: inset 1px 1px 0 #c87030, inset -1px -1px 0 #3a1a00, 2px 2px 0 var(--wood-border);
+  }
+
+  /* ── MAIN WINDOW ── */
+  .main-window {
+    width: 100%;
+    max-width: 480px;
+    padding: 14px;
+  }
+
+  /* ── SKILL GRID ── */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 4px;
+  }
+
+  .skill-slot {
+    background: var(--slot-bg);
+    border: 3px solid var(--slot-border);
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,0.06),
+      inset -2px -2px 0 rgba(0,0,0,0.4),
+      2px 2px 0 var(--wood-border);
+    padding: 10px 8px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.1s;
+    position: relative;
+    min-height: 90px;
+  }
+  .skill-slot:active { transform: translate(1px, 1px); }
+  .skill-slot.mastered {
+    background: #5a3e10;
+    border-color: #8a6010;
+    box-shadow:
+      inset 2px 2px 0 rgba(255,220,80,0.15),
+      inset -2px -2px 0 rgba(0,0,0,0.4),
+      2px 2px 0 var(--wood-border),
+      0 0 12px rgba(245,200,66,0.3);
+  }
+
+  .skill-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    image-rendering: pixelated;
+    position: relative;
+  }
+  .skill-icon .star-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: 12px;
+    filter: drop-shadow(0 0 3px gold);
+  }
+
+  .skill-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-align: center;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  .skill-slot.mastered .skill-name { color: var(--gold); }
+
+  .skill-grade-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border: 1px solid currentColor;
+    border-radius: 0;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── DETAIL VIEW ── */
+  .detail-view {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .detail-view.active { display: flex; }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 4px 8px 12px;
+    border-bottom: 2px solid var(--wood-border);
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    background: var(--slot-bg);
+    border: 3px solid var(--slot-border);
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.06), 2px 2px 0 var(--wood-border);
+    color: var(--text-light);
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .back-btn:active { transform: translate(1px,1px); box-shadow: none; }
+
+  .detail-skill-icon { font-size: 28px; }
+  .detail-skill-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 2px 2px 0 var(--wood-border);
+    letter-spacing: 1px;
+  }
+
+  /* ── CIRCLE GRADES ── */
+  .grades-circle-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 8px auto 0;
+  }
+
+  .grades-center-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+  .grades-center-label .current-grade-name {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 1px 1px 0 var(--wood-border);
+    display: block;
+  }
+  .grades-center-label .current-grade-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* connecting lines */
+  .grades-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .grade-node {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+
+  .grade-node-inner {
+    width: 100%;
+    height: 100%;
+    background: var(--slot-inner);
+    border: 3px solid var(--slot-border);
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,0.06),
+      inset -2px -2px 0 rgba(0,0,0,0.5),
+      2px 2px 0 var(--wood-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .grade-node.unlocked .grade-node-inner {
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,0.12),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      2px 2px 0 var(--wood-border),
+      0 0 10px var(--grade-color, #fff4);
+    border-color: var(--grade-color, var(--slot-border));
+  }
+
+  .grade-node-icon {
+    font-size: 22px;
+    filter: grayscale(1) brightness(0.5);
+    transition: filter 0.15s;
+  }
+  .grade-node.unlocked .grade-node-icon {
+    filter: none;
+    drop-shadow(0 0 4px var(--grade-color));
+  }
+
+  .grade-node-label {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--inactive);
+    letter-spacing: 0.3px;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .grade-node.unlocked .grade-node-label {
+    color: var(--grade-color, var(--text-light));
+    text-shadow: 0 0 4px var(--grade-color);
+  }
+
+  .grade-node-inner:active { transform: scale(0.95); }
+
+  /* ── GRADE INFO PANEL ── */
+  .grade-info-panel {
+    width: 100%;
+    margin-top: 14px;
+    background: var(--slot-inner);
+    border: 3px solid var(--slot-border);
+    box-shadow: inset 2px 2px 0 rgba(255,255,255,0.04), 2px 2px 0 var(--wood-border);
+    padding: 12px 14px;
+    min-height: 80px;
+  }
+  .grade-info-title {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  .grade-info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .grade-info-list li {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding-left: 12px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .grade-info-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 9px;
+    top: 1px;
+  }
+  .grade-info-hint {
+    font-size: 10px;
+    color: var(--inactive);
+    margin-top: 8px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* ── EDIT MODE ── */
+  .edit-panel {
+    display: none;
+    width: 100%;
+    max-width: 480px;
+    padding: 14px;
+    margin-top: 10px;
+  }
+  .edit-panel.active { display: block; }
+
+  .edit-section-title {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--wood-border);
+  }
+
+  .edit-skill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .edit-skill-row {
+    background: var(--slot-inner);
+    border: 2px solid var(--slot-border);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .edit-skill-row-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .px-input {
+    background: #2a1a0a;
+    border: 2px solid var(--slot-border);
+    box-shadow: inset 1px 1px 0 rgba(0,0,0,0.5);
+    color: var(--text-light);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 5px 8px;
+    flex: 1;
+    outline: none;
+  }
+  .px-input:focus { border-color: var(--gold); }
+
+  .edit-grades-toggle {
+    font-size: 10px;
+    color: var(--text-dim);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 2px 6px;
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .edit-grades-toggle:hover { color: var(--gold); }
+
+  .edit-grades-detail {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .edit-grades-detail.open { display: flex; }
+
+  .edit-grade-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    background: rgba(0,0,0,0.2);
+    border-left: 3px solid var(--grade-color, var(--wood-mid));
+  }
+  .edit-grade-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--grade-color, var(--text-dim));
+    letter-spacing: 0.5px;
+  }
+  .edit-grade-conditions {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .edit-condition-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .edit-condition-input {
+    flex: 1;
+  }
+  .del-cond-btn {
+    background: #5a1010;
+    border: 2px solid #3a0808;
+    color: #ff8888;
+    font-size: 12px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: monospace;
+    font-weight: 700;
+  }
+  .add-cond-btn {
+    font-size: 10px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed var(--slot-border);
+    padding: 3px 8px;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    width: 100%;
+    text-align: center;
+  }
+  .add-cond-btn:hover { color: var(--gold); border-color: var(--gold); }
+
+  .del-skill-btn {
+    background: #5a1010;
+    border: 2px solid #3a0808;
+    box-shadow: 1px 1px 0 var(--wood-border);
+    color: #ff8888;
+    font-size: 12px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: monospace;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .add-skill-btn {
+    width: 100%;
+    padding: 10px;
+    background: rgba(245,200,66,0.08);
+    border: 2px dashed var(--wood-mid);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .add-skill-btn:hover { background: rgba(245,200,66,0.14); }
+
+  /* io buttons */
+  .io-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .io-row .px-btn { flex: 1; text-align: center; padding: 8px; font-size: 11px; }
+  .io-row label.px-btn { display: flex; align-items: center; justify-content: center; }
+  #file-input { display: none; }
+
+  /* ── GRADE COLORS ── */
+  [data-grade="0"] { --grade-color: var(--beginner); }
+  [data-grade="1"] { --grade-color: var(--lowest); }
+  [data-grade="2"] { --grade-color: var(--low); }
+  [data-grade="3"] { --grade-color: var(--mid); }
+  [data-grade="4"] { --grade-color: var(--high); }
+  [data-grade="5"] { --grade-color: var(--mastery); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--wood-dark);
+    border: 3px solid var(--gold);
+    box-shadow: 2px 2px 0 var(--wood-border), 0 0 12px rgba(245,200,66,0.4);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 18px;
+    letter-spacing: 0.5px;
+    transition: transform 0.25s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── SKILL VIEW / EDIT GRID toggle ── */
+  .skill-grid-view { display: grid; }
+  .skill-grid-view.hidden { display: none; }
+
+  .icon-btn-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .emoji-input {
+    width: 48px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  hr.px-divider {
+    border: none;
+    border-top: 2px solid var(--wood-border);
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="panel header">
+  <div>
+    <span class="header-title">⚔ SKILLS <span>스킬 트래커</span></span>
+  </div>
+  <div class="header-btns">
+    <button class="px-btn" id="save-btn" onclick="saveData()">💾 저장</button>
+    <button class="px-btn accent" id="edit-toggle-btn" onclick="toggleEdit()">✏ 편집</button>
+  </div>
+</div>
+
+<!-- MAIN PANEL: SKILL GRID -->
+<div class="panel main-window" id="main-panel">
+  <div class="skill-grid" id="skill-grid"></div>
+
+  <!-- DETAIL VIEW -->
+  <div class="detail-view" id="detail-view">
+    <div class="detail-header">
+      <div class="back-btn" onclick="closeDetail()">◀</div>
+      <div class="detail-skill-icon" id="detail-icon"></div>
+      <div class="detail-skill-name" id="detail-name"></div>
+    </div>
+    <div class="grades-circle-container" id="grades-circle">
+      <svg class="grades-svg" id="grades-svg"></svg>
+      <div class="grades-center-label">
+        <span class="current-grade-name" id="center-grade-name">—</span>
+        <span class="current-grade-sub" id="center-grade-sub">현재 등급</span>
+      </div>
+    </div>
+    <div class="grade-info-panel" id="grade-info-panel">
+      <div class="grade-info-title" id="grade-info-title">등급을 클릭하세요</div>
+      <ul class="grade-info-list" id="grade-info-list"></ul>
+      <div class="grade-info-hint" id="grade-info-hint"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PANEL -->
+<div class="panel edit-panel" id="edit-panel">
+  <div class="edit-section-title">✏ 스킬 편집</div>
+  <div class="edit-skill-list" id="edit-skill-list"></div>
+  <button class="add-skill-btn" onclick="addSkill()">＋ 스킬 추가</button>
+  <hr class="px-divider">
+  <div class="edit-section-title">💾 데이터</div>
+  <div class="io-row">
+    <button class="px-btn accent" onclick="saveData()">JSON 저장</button>
+    <label class="px-btn accent" for="file-input">JSON 불러오기</label>
+    <input type="file" id="file-input" accept=".json" onchange="loadData(event)">
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DEFAULT DATA ──
+const DEFAULT_GRADE_NAMES = ['비기너','최하급','하급','중급','상급','마스터리'];
+const GRADE_COLORS = ['#aaaaaa','#88cc66','#44aaff','#aa66ff','#ff8844','#f5c842'];
+const GRADE_EMOJIS = ['🌱','🔰','🔵','🟣','🔶','⭐'];
+
+const DEFAULT_SKILLS = [
+  {
+    id: 's1', name: '주식', icon: '📈',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['기본 주식 개념 이해 (시가총액, PER, PBR 등)', '증권계좌 개설 및 HTS/MTS 조작 가능'] },
+      { name: '최하급', conditions: ['기법 및 이론 숙지 (이동평균선, 캔들 기초)', '손실 시 대응 방안 숙지'] },
+      { name: '하급', conditions: ['기술적 분석 실전 적용 가능', '섹터별 종목 특성 파악', '손절 원칙 지키며 매매 가능'] },
+      { name: '중급', conditions: ['거시 지표와 주가 흐름 연결 분석', '실전 매매에서 꾸준한 수익 창출', '매매일지 기록 및 복기 습관화'] },
+      { name: '상급', conditions: ['자체 매매 전략 체계 구축', '시장 사이클 분석 및 대응 가능', '리스크 관리 고도화'] },
+      { name: '마스터리', conditions: ['독자적 투자 철학 완성', '멀티 타임프레임 통합 분석', '모든 시장 국면 대응 가능'] },
+    ]
+  },
+  {
+    id: 's2', name: '선물', icon: '📊',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['선물 기본 구조 이해 (만기, 롤오버)', '레버리지 개념 및 위험성 인지'] },
+      { name: '최하급', conditions: ['선물 호가창 및 체결 방식 이해', '증거금 및 청산 구조 파악'] },
+      { name: '하급', conditions: ['기본 선물 매매 전략 실전 적용', '변동성 관리 가능'] },
+      { name: '중급', conditions: ['헤징 전략 이해 및 활용', '옵션과 선물의 연계 분석'] },
+      { name: '상급', conditions: ['고급 선물 전략 운용', '시장 유동성 분석 가능'] },
+      { name: '마스터리', conditions: ['선물 시장 전체 구조 통달', '독자 선물 전략 시스템 운용'] },
+    ]
+  },
+  {
+    id: 's3', name: '옵션', icon: '🎯',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['콜/풋 개념 이해', '프리미엄 구조 기초 파악'] },
+      { name: '최하급', conditions: ['그릭스(델타·감마·세타·베가) 개념 숙지', '기본 옵션 매수 전략 이해'] },
+      { name: '하급', conditions: ['수직 스프레드 전략 실전 적용', '내재 변동성 개념 활용'] },
+      { name: '중급', conditions: ['복합 전략 운용 (스트래들, 아이언콘도르 등)', '변동성 곡면 분석 가능'] },
+      { name: '상급', conditions: ['포지션 델타 헤징 실시간 관리', '고급 옵션 구조 설계'] },
+      { name: '마스터리', conditions: ['옵션 시장 전체 매커니즘 통달', '독자 옵션 전략 시스템 완성'] },
+    ]
+  },
+  {
+    id: 's4', name: '계좌관리', icon: '💼',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['계좌 종류 및 세금 구조 기본 이해'] },
+      { name: '최하급', conditions: ['포지션 사이징 기초 적용', '계좌별 목적 분리 인지'] },
+      { name: '하급', conditions: ['3계좌 시스템 운용', '리스크 비율 지켜 매매'] },
+      { name: '중급', conditions: ['자산배분 전략 수립 및 적용', '세금 최적화 기초 (손익 통산 등)'] },
+      { name: '상급', conditions: ['전략별 계좌 고도화 운용', '수익 곡선 분석 및 드로다운 관리'] },
+      { name: '마스터리', conditions: ['포트폴리오 전체 자산 통합 관리', '세금·리스크·수익 삼박자 최적화'] },
+    ]
+  },
+  {
+    id: 's5', name: '국제정세', icon: '🌍',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['주요 국가 및 기관 기초 파악 (연준, IMF 등)'] },
+      { name: '최하급', conditions: ['지정학적 리스크가 시장에 미치는 영향 인지', '주요 국제 뉴스 해석 가능'] },
+      { name: '하급', conditions: ['국제 정세 변화와 섹터/자산군 연결 분석', '제재·무역 이슈 시장 영향 파악'] },
+      { name: '중급', conditions: ['패권 경쟁 구도 분석 (미·중 관계 등)', '정세 변화에 따른 포지션 대응 가능'] },
+      { name: '상급', conditions: ['지정학 사이클 분석 체계 보유', '정세 선행 지표 도출 가능'] },
+      { name: '마스터리', conditions: ['국제 정세 흐름을 투자 체계에 완전 통합', '독자 국제 정세 프레임워크 완성'] },
+    ]
+  },
+  {
+    id: 's6', name: '거시경제', icon: '📉',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['GDP, 인플레이션, 금리 기초 개념 이해'] },
+      { name: '최하급', conditions: ['주요 경제 지표 발표 일정 및 해석 가능', '경기 사이클 4국면 개념 숙지'] },
+      { name: '하급', conditions: ['지표와 자산 가격 흐름 연결 분석 가능', '통화 정책 방향 예측 시도'] },
+      { name: '중급', conditions: ['경기 사이클 상 현재 국면 판단 가능', '선행·동행·후행 지표 통합 분석'] },
+      { name: '상급', conditions: ['매크로 분석 기반 중장기 포지션 수립', '금리·환율·상품 삼각 분석 가능'] },
+      { name: '마스터리', conditions: ['독자적 거시 분석 프레임 완성', 'HG↔FM 연결 통합 분석 체계 운용'] },
+    ]
+  },
+  {
+    id: 's7', name: '산업과기업', icon: '🏭',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['주요 산업 분류 및 특성 기초 이해'] },
+      { name: '최하급', conditions: ['섹터 로테이션 개념 이해', '기업 재무제표 기초 독해'] },
+      { name: '하급', conditions: ['산업 사이클과 기업 실적 연결 분석', '경쟁 구도 및 시장 지위 파악'] },
+      { name: '중급', conditions: ['섹터별 선행 지표 활용 가능', '기업 밸류에이션 독자 산출'] },
+      { name: '상급', conditions: ['산업 구조 변화 선제 포착 가능', '기업 퀄리티 분석 체계화'] },
+      { name: '마스터리', conditions: ['산업·기업 분석을 매크로 프레임과 완전 통합', '독자 섹터 전략 시스템 완성'] },
+    ]
+  },
+  {
+    id: 's8', name: '기록', icon: '📝',
+    currentGrade: -1,
+    grades: [
+      { name: '비기너', conditions: ['매매 기록 습관 시작'] },
+      { name: '최하급', conditions: ['매매일지 꾸준히 작성', '기본 복기 루틴 보유'] },
+      { name: '하급', conditions: ['복기 통해 패턴 오류 발견', '슈퍼예측가식 저널링 적용'] },
+      { name: '중급', conditions: ['기록 기반 전략 개선 사이클 완성', '오류 유형 분류 및 교정'] },
+      { name: '상급', conditions: ['기록 시스템이 투자 판단 교정 도구로 작동', '옵시디언 등 체계적 지식 관리 운용'] },
+      { name: '마스터리', conditions: ['기록 시스템 완전 내재화', '메타인지 기반 지속 자기 교정 체계 완성'] },
+    ]
+  },
+];
+
+let state = {
+  skills: JSON.parse(JSON.stringify(DEFAULT_SKILLS)),
+  gradeNames: [...DEFAULT_GRADE_NAMES],
+};
+
+let currentSkillId = null;
+let selectedGradeIdx = null;
+let editMode = false;
+
+// ── GRADE COLORS ──
+function gradeColor(idx) { return GRADE_COLORS[idx] || '#aaaaaa'; }
+function gradeEmoji(idx) { return GRADE_EMOJIS[idx] || '◆'; }
+
+// ── RENDER SKILL GRID ──
+function renderGrid() {
+  const grid = document.getElementById('skill-grid');
+  grid.innerHTML = '';
+  state.skills.forEach(skill => {
+    const mastered = skill.currentGrade >= skill.grades.length - 1 && skill.currentGrade >= 0;
+    const div = document.createElement('div');
+    div.className = 'skill-slot' + (mastered ? ' mastered' : '');
+    div.onclick = () => openDetail(skill.id);
+
+    const gradeName = skill.currentGrade >= 0 ? (skill.grades[skill.currentGrade]?.name || '') : '미개방';
+    const gradeCol = skill.currentGrade >= 0 ? gradeColor(skill.currentGrade) : '#666';
+
+    div.innerHTML = `
+      <div class="skill-icon">
+        ${skill.icon}
+        ${mastered ? '<span class="star-badge">⭐</span>' : ''}
+      </div>
+      <div class="skill-name">${skill.name}</div>
+      <div class="skill-grade-badge" style="color:${gradeCol};border-color:${gradeCol}">${gradeName}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// ── OPEN DETAIL ──
+function openDetail(skillId) {
+  currentSkillId = skillId;
+  selectedGradeIdx = null;
+  const skill = state.skills.find(s => s.id === skillId);
+  if (!skill) return;
+
+  document.getElementById('skill-grid').style.display = 'none';
+  document.getElementById('detail-view').classList.add('active');
+
+  document.getElementById('detail-icon').textContent = skill.icon;
+  document.getElementById('detail-name').textContent = skill.name;
+
+  updateCenterLabel(skill);
+  renderGradeCircle(skill);
+  updateGradeInfo(skill, null);
+}
+
+function closeDetail() {
+  document.getElementById('skill-grid').style.display = 'grid';
+  document.getElementById('detail-view').classList.remove('active');
+  currentSkillId = null;
+  selectedGradeIdx = null;
+}
+
+// ── GRADE CIRCLE ──
+function renderGradeCircle(skill) {
+  const container = document.getElementById('grades-circle');
+  const svg = document.getElementById('grades-svg');
+  const n = skill.grades.length;
+  const cx = 140, cy = 140, r = 96;
+
+  // Remove old nodes
+  container.querySelectorAll('.grade-node').forEach(el => el.remove());
+  svg.innerHTML = '';
+
+  const angles = [];
+  for (let i = 0; i < n; i++) {
+    // counterclockwise starting from top (270deg), going CCW
+    const angle = (270 - (360 / n) * i) * Math.PI / 180;
+    angles.push(angle);
+  }
+
+  // Draw connecting lines
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const x1 = cx + r * Math.cos(angles[i]);
+    const y1 = cy + r * Math.sin(angles[i]);
+    const x2 = cx + r * Math.cos(angles[j]);
+    const y2 = cy + r * Math.sin(angles[j]);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    const unlocked = skill.currentGrade >= i && skill.currentGrade >= j;
+    line.setAttribute('stroke', unlocked ? gradeColor(Math.min(i,j)) : '#3a2010');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-dasharray', unlocked ? 'none' : '4,4');
+    svg.appendChild(line);
+  }
+
+  angles.forEach((angle, i) => {
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    const grade = skill.grades[i];
+    const unlocked = skill.currentGrade >= i;
+
+    const node = document.createElement('div');
+    node.className = 'grade-node' + (unlocked ? ' unlocked' : '');
+    node.dataset.grade = i;
+    node.style.left = x + 'px';
+    node.style.top = y + 'px';
+    node.style.setProperty('--grade-color', gradeColor(i));
+
+    node.innerHTML = `
+      <div class="grade-node-inner">
+        <div class="grade-node-icon">${gradeEmoji(i)}</div>
+        <div class="grade-node-label">${grade.name}</div>
+      </div>
+    `;
+
+    node.onclick = () => onGradeClick(skill, i);
+    container.appendChild(node);
+  });
+}
+
+function onGradeClick(skill, idx) {
+  selectedGradeIdx = idx;
+  updateGradeInfo(skill, idx);
+
+  // Show unlock/lock hint
+  const infoHint = document.getElementById('grade-info-hint');
+  if (skill.currentGrade === idx) {
+    infoHint.textContent = '클릭하면 이 등급을 해제합니다';
+    infoHint.onclick = () => { toggleGrade(skill, idx); };
+    infoHint.style.cursor = 'pointer';
+    infoHint.style.color = '#ff8888';
+  } else if (skill.currentGrade < idx) {
+    infoHint.textContent = '✓ 달성했다면 클릭하여 활성화';
+    infoHint.onclick = () => { toggleGrade(skill, idx); };
+    infoHint.style.cursor = 'pointer';
+    infoHint.style.color = '#88cc66';
+  } else {
+    infoHint.textContent = '이미 달성한 등급입니다';
+    infoHint.onclick = () => { toggleGrade(skill, idx); };
+    infoHint.style.cursor = 'pointer';
+    infoHint.style.color = '#aaa';
+  }
+}
+
+function toggleGrade(skill, idx) {
+  if (skill.currentGrade === idx) {
+    skill.currentGrade = idx - 1;
+  } else {
+    skill.currentGrade = idx;
+  }
+  updateCenterLabel(skill);
+  renderGradeCircle(skill);
+  updateGradeInfo(skill, idx);
+  renderGrid();
+  showToast(skill.currentGrade >= 0 ? `${skill.grades[skill.currentGrade]?.name} 달성! 🎉` : '등급 초기화');
+}
+
+function updateCenterLabel(skill) {
+  const nameEl = document.getElementById('center-grade-name');
+  const subEl = document.getElementById('center-grade-sub');
+  if (skill.currentGrade >= 0 && skill.currentGrade < skill.grades.length) {
+    nameEl.textContent = skill.grades[skill.currentGrade].name;
+    nameEl.style.color = gradeColor(skill.currentGrade);
+  } else {
+    nameEl.textContent = '—';
+    nameEl.style.color = '#aaa';
+  }
+  subEl.textContent = '현재 등급';
+}
+
+function updateGradeInfo(skill, idx) {
+  const titleEl = document.getElementById('grade-info-title');
+  const listEl = document.getElementById('grade-info-list');
+  const hintEl = document.getElementById('grade-info-hint');
+
+  if (idx === null) {
+    titleEl.textContent = '등급을 클릭하세요';
+    listEl.innerHTML = '';
+    hintEl.textContent = '각 등급의 달성 조건을 확인하고 클릭하여 활성화하세요';
+    hintEl.style.color = '#6b5040';
+    hintEl.onclick = null;
+    hintEl.style.cursor = 'default';
+    return;
+  }
+  const grade = skill.grades[idx];
+  titleEl.textContent = grade.name + ' — 달성 조건';
+  titleEl.style.color = gradeColor(idx);
+  listEl.innerHTML = '';
+  (grade.conditions || []).forEach(c => {
+    const li = document.createElement('li');
+    li.textContent = c;
+    listEl.appendChild(li);
+  });
+}
+
+// ── EDIT MODE ──
+function toggleEdit() {
+  editMode = !editMode;
+  const btn = document.getElementById('edit-toggle-btn');
+  const panel = document.getElementById('edit-panel');
+  if (editMode) {
+    btn.textContent = '✓ 완료';
+    btn.classList.add('edit-active');
+    panel.classList.add('active');
+    renderEditPanel();
+    // Close detail if open
+    closeDetail();
+  } else {
+    btn.textContent = '✏ 편집';
+    btn.classList.remove('edit-active');
+    panel.classList.remove('active');
+    renderGrid();
+  }
+}
+
+function renderEditPanel() {
+  const list = document.getElementById('edit-skill-list');
+  list.innerHTML = '';
+  state.skills.forEach((skill, si) => {
+    const row = document.createElement('div');
+    row.className = 'edit-skill-row';
+
+    const gradesHtml = skill.grades.map((g, gi) => {
+      const condsHtml = (g.conditions || []).map((c, ci) => `
+        <div class="edit-condition-row">
+          <input class="px-input edit-condition-input" value="${escHtml(c)}"
+            oninput="updateCondition(${si},${gi},${ci},this.value)" placeholder="달성 조건 입력">
+          <div class="del-cond-btn" onclick="deleteCondition(${si},${gi},${ci})">✕</div>
+        </div>
+      `).join('');
+      return `
+        <div class="edit-grade-row" data-grade="${gi}" style="border-left-color:${gradeColor(gi)}">
+          <div class="edit-grade-label" style="color:${gradeColor(gi)}">${gradeEmoji(gi)} ${g.name}</div>
+          <div class="edit-grade-conditions" id="conds-${si}-${gi}">${condsHtml}</div>
+          <button class="add-cond-btn" onclick="addCondition(${si},${gi})">＋ 조건 추가</button>
+        </div>
+      `;
+    }).join('');
+
+    row.innerHTML = `
+      <div class="edit-skill-row-top">
+        <input class="px-input emoji-input" value="${skill.icon}"
+          oninput="updateSkillField(${si},'icon',this.value)" maxlength="4" title="아이콘 이모지">
+        <input class="px-input" value="${escHtml(skill.name)}"
+          oninput="updateSkillField(${si},'name',this.value)" placeholder="스킬 이름">
+        <div class="del-skill-btn" onclick="deleteSkill(${si})" title="삭제">✕</div>
+        <button class="edit-grades-toggle" onclick="toggleGradeDetail(this)">▼ 등급 조건</button>
+      </div>
+      <div class="edit-grades-detail">${gradesHtml}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function toggleGradeDetail(btn) {
+  const detail = btn.closest('.edit-skill-row').querySelector('.edit-grades-detail');
+  const open = detail.classList.toggle('open');
+  btn.textContent = (open ? '▲' : '▼') + ' 등급 조건';
+}
+
+function updateSkillField(si, field, val) {
+  state.skills[si][field] = val;
+}
+function updateCondition(si, gi, ci, val) {
+  state.skills[si].grades[gi].conditions[ci] = val;
+}
+function addCondition(si, gi) {
+  state.skills[si].grades[gi].conditions.push('새 조건');
+  renderEditPanel();
+  // re-open the grade detail
+  const rows = document.querySelectorAll('.edit-skill-row');
+  const gradeDetail = rows[si]?.querySelector('.edit-grades-detail');
+  if (gradeDetail) gradeDetail.classList.add('open');
+  const btn = rows[si]?.querySelector('.edit-grades-toggle');
+  if (btn) btn.textContent = '▲ 등급 조건';
+}
+function deleteCondition(si, gi, ci) {
+  state.skills[si].grades[gi].conditions.splice(ci, 1);
+  renderEditPanel();
+  const rows = document.querySelectorAll('.edit-skill-row');
+  const gradeDetail = rows[si]?.querySelector('.edit-grades-detail');
+  if (gradeDetail) gradeDetail.classList.add('open');
+  const btn = rows[si]?.querySelector('.edit-grades-toggle');
+  if (btn) btn.textContent = '▲ 등급 조건';
+}
+function deleteSkill(si) {
+  if (!confirm(`'${state.skills[si].name}' 스킬을 삭제할까요?`)) return;
+  state.skills.splice(si, 1);
+  renderEditPanel();
+}
+function addSkill() {
+  const newId = 's' + Date.now();
+  const grades = DEFAULT_GRADE_NAMES.map(name => ({ name, conditions: ['달성 조건을 입력하세요'] }));
+  state.skills.push({ id: newId, name: '새 스킬', icon: '✨', currentGrade: -1, grades });
+  renderEditPanel();
+  showToast('스킬이 추가되었습니다');
+}
+
+// ── SAVE / LOAD ──
+function saveData() {
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'skill-data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 skill-data.json 저장 완료');
+}
+function loadData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const loaded = JSON.parse(ev.target.result);
+      state = loaded;
+      renderGrid();
+      if (editMode) renderEditPanel();
+      showToast('✓ 데이터 불러오기 완료');
+    } catch {
+      showToast('❌ JSON 파일 오류');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── UTILS ──
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── INIT ──
+renderGrid();
+
+// ── PWA SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
