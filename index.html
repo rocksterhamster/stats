@@ -31,8 +31,8 @@
     --wood-dark: #3d2a1a;
     --wood-mid: #6b4423;
     --wood-light: #8b5e34;
-    --wood-panel: #c8874a;
-    --wood-panel-light: #d9a06a;
+    --wood-panel: #a06030;
+    --wood-panel-light: #b87840;
     --wood-border: #2a1a0e;
     --slot-bg: #5c3820;
     --slot-border: #3a2010;
@@ -176,13 +176,14 @@
   }
   .skill-slot:active { transform: translate(1px, 1px); }
   .skill-slot.mastered {
-    background: #5a3e10;
-    border-color: #8a6010;
+    background: #6b4a1a;
+    border-color: #f5c842;
     box-shadow:
-      inset 2px 2px 0 rgba(255,220,80,0.15),
-      inset -2px -2px 0 rgba(0,0,0,0.4),
+      inset 0 0 0 1px rgba(255,240,120,0.6),
+      inset 2px 2px 0 rgba(255,245,160,0.35),
+      inset -2px -2px 0 rgba(180,120,0,0.5),
       2px 2px 0 var(--wood-border),
-      0 0 12px rgba(245,200,66,0.3);
+      0 0 14px rgba(255,200,40,0.45);
   }
 
   .skill-icon {
@@ -346,7 +347,7 @@
   }
   .grade-node.unlocked .grade-node-icon {
     filter: none;
-    drop-shadow(0 0 4px var(--grade-color));
+    color: var(--grade-color);
   }
 
   .grade-node-label {
@@ -719,7 +720,10 @@
 // ── DEFAULT DATA ──
 const DEFAULT_GRADE_NAMES = ['비기너','최하급','하급','중급','상급','마스터리'];
 const GRADE_COLORS = ['#aaaaaa','#88cc66','#44aaff','#aa66ff','#ff8844','#f5c842'];
-const GRADE_EMOJIS = ['🌱','🔰','🔵','🟣','🔶','⭐'];
+function gradeEmoji(idx) {
+  const icons = ['🌱','🐤','🔵','🟣','🔶','⭐'];
+  return `<span style="font-size:22px;line-height:1">${icons[idx] || '◆'}</span>`;
+}
 
 const DEFAULT_SKILLS = [
   {
@@ -831,7 +835,6 @@ let editMode = false;
 
 // ── GRADE COLORS ──
 function gradeColor(idx) { return GRADE_COLORS[idx] || '#aaaaaa'; }
-function gradeEmoji(idx) { return GRADE_EMOJIS[idx] || '◆'; }
 
 // ── RENDER SKILL GRID ──
 function renderGrid() {
@@ -931,53 +934,43 @@ function renderGradeCircle(skill) {
     node.style.top = y + 'px';
     node.style.setProperty('--grade-color', gradeColor(i));
 
+    const iconHtml = gradeEmoji(i);
     node.innerHTML = `
-      <div class="grade-node-inner">
-        <div class="grade-node-icon">${gradeEmoji(i)}</div>
+      <div class="grade-node-inner" style="pointer-events:none">
+        <div class="grade-node-icon" style="color:${unlocked ? gradeColor(i) : '#4a3020'}">${iconHtml}</div>
         <div class="grade-node-label">${grade.name}</div>
       </div>
     `;
 
-    node.onclick = () => onGradeClick(skill, i);
+    node.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onGradeClick(skill.id, i);
+    });
     container.appendChild(node);
   });
 }
 
-function onGradeClick(skill, idx) {
-  selectedGradeIdx = idx;
-  updateGradeInfo(skill, idx);
+function onGradeClick(skillId, idx) {
+  const skill = state.skills.find(s => s.id === skillId);
+  if (!skill) return;
 
-  // Show unlock/lock hint
-  const infoHint = document.getElementById('grade-info-hint');
-  if (skill.currentGrade === idx) {
-    infoHint.textContent = '클릭하면 이 등급을 해제합니다';
-    infoHint.onclick = () => { toggleGrade(skill, idx); };
-    infoHint.style.cursor = 'pointer';
-    infoHint.style.color = '#ff8888';
-  } else if (skill.currentGrade < idx) {
-    infoHint.textContent = '✓ 달성했다면 클릭하여 활성화';
-    infoHint.onclick = () => { toggleGrade(skill, idx); };
-    infoHint.style.cursor = 'pointer';
-    infoHint.style.color = '#88cc66';
-  } else {
-    infoHint.textContent = '이미 달성한 등급입니다';
-    infoHint.onclick = () => { toggleGrade(skill, idx); };
-    infoHint.style.cursor = 'pointer';
-    infoHint.style.color = '#aaa';
-  }
-}
-
-function toggleGrade(skill, idx) {
+  // 한 번 클릭으로 바로 활성화/해제
   if (skill.currentGrade === idx) {
     skill.currentGrade = idx - 1;
   } else {
     skill.currentGrade = idx;
   }
+
+  selectedGradeIdx = idx;
   updateCenterLabel(skill);
   renderGradeCircle(skill);
-  updateGradeInfo(skill, idx);
+  updateGradeInfo(skill, skill.currentGrade);
   renderGrid();
   showToast(skill.currentGrade >= 0 ? `${skill.grades[skill.currentGrade]?.name} 달성! 🎉` : '등급 초기화');
+}
+
+function toggleGrade(skillId, idx) {
+  onGradeClick(skillId, idx);
 }
 
 function updateCenterLabel(skill) {
@@ -998,17 +991,20 @@ function updateGradeInfo(skill, idx) {
   const listEl = document.getElementById('grade-info-list');
   const hintEl = document.getElementById('grade-info-hint');
 
-  if (idx === null) {
+  if (idx === null || idx < 0) {
     titleEl.textContent = '등급을 클릭하세요';
+    titleEl.style.color = 'var(--gold)';
     listEl.innerHTML = '';
-    hintEl.textContent = '각 등급의 달성 조건을 확인하고 클릭하여 활성화하세요';
+    hintEl.textContent = '클릭하면 해당 등급이 바로 활성화됩니다';
     hintEl.style.color = '#6b5040';
     hintEl.onclick = null;
     hintEl.style.cursor = 'default';
     return;
   }
   const grade = skill.grades[idx];
-  titleEl.textContent = grade.name + ' — 달성 조건';
+  if (!grade) return;
+  const isActive = skill.currentGrade === idx;
+  titleEl.textContent = grade.name + (isActive ? ' ✓ 달성' : ' — 달성 조건');
   titleEl.style.color = gradeColor(idx);
   listEl.innerHTML = '';
   (grade.conditions || []).forEach(c => {
@@ -1016,6 +1012,10 @@ function updateGradeInfo(skill, idx) {
     li.textContent = c;
     listEl.appendChild(li);
   });
+  hintEl.textContent = isActive ? '다시 클릭하면 해제됩니다' : '클릭하면 이 등급이 활성화됩니다';
+  hintEl.style.color = isActive ? '#ff8888' : '#88cc44';
+  hintEl.onclick = null;
+  hintEl.style.cursor = 'default';
 }
 
 // ── EDIT MODE ──
@@ -1055,7 +1055,7 @@ function renderEditPanel() {
       `).join('');
       return `
         <div class="edit-grade-row" data-grade="${gi}" style="border-left-color:${gradeColor(gi)}">
-          <div class="edit-grade-label" style="color:${gradeColor(gi)}">${gradeEmoji(gi)} ${g.name}</div>
+          <div class="edit-grade-label" style="color:${gradeColor(gi)}">◆ ${g.name}</div>
           <div class="edit-grade-conditions" id="conds-${si}-${gi}">${condsHtml}</div>
           <button class="add-cond-btn" onclick="addCondition(${si},${gi})">＋ 조건 추가</button>
         </div>
