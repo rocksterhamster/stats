@@ -33,7 +33,8 @@
     --wood-light: #8b5e34;
     --wood-panel: #a06030;
     --wood-panel-light: #b87840;
-    --wood-border: #2a1a0e;
+    --wood-shadow: #0d0804;
+    --text-shadow: #0d0804;
     --slot-bg: #5c3820;
     --slot-border: #3a2010;
     --slot-inner: #4a2e18;
@@ -75,7 +76,7 @@
     box-shadow:
       inset 2px 2px 0 var(--wood-panel-light),
       inset -2px -2px 0 var(--wood-dark),
-      4px 4px 0 var(--wood-border);
+      4px 4px 0 var(--wood-shadow);
     image-rendering: pixelated;
     position: relative;
   }
@@ -101,7 +102,7 @@
     font-size: 20px;
     font-weight: 900;
     color: var(--gold);
-    text-shadow: 2px 2px 0 var(--wood-border), -1px -1px 0 #a07020;
+    text-shadow: 2px 2px 0 var(--text-shadow), -1px -1px 0 var(--text-shadow);
     letter-spacing: 2px;
     image-rendering: pixelated;
   }
@@ -118,7 +119,7 @@
   .px-btn {
     background: var(--wood-mid);
     border: 3px solid var(--wood-border);
-    box-shadow: inset 1px 1px 0 var(--wood-light), inset -1px -1px 0 var(--wood-dark), 2px 2px 0 var(--wood-border);
+    box-shadow: inset 1px 1px 0 var(--wood-light), inset -1px -1px 0 var(--wood-dark), 2px 2px 0 var(--wood-shadow);
     color: var(--text-light);
     font-family: 'PFStardust', sans-serif;
     font-size: 11px;
@@ -133,13 +134,14 @@
     box-shadow: inset 1px 1px 0 var(--wood-light), inset -1px -1px 0 var(--wood-dark);
   }
   .px-btn.accent {
-    background: #5a3a10;
+    background: var(--wood-mid);
     color: var(--gold);
+    border-color: var(--wood-border);
   }
   .px-btn.edit-active {
-    background: #8b4513;
+    background: var(--wood-light);
     color: var(--gold);
-    box-shadow: inset 1px 1px 0 #c87030, inset -1px -1px 0 #3a1a00, 2px 2px 0 var(--wood-border);
+    box-shadow: inset 1px 1px 0 var(--wood-panel-light), inset -1px -1px 0 var(--wood-dark), 2px 2px 0 var(--wood-shadow);
   }
 
   /* ── MAIN WINDOW ── */
@@ -163,7 +165,7 @@
     box-shadow:
       inset 2px 2px 0 rgba(255,255,255,0.06),
       inset -2px -2px 0 rgba(0,0,0,0.4),
-      2px 2px 0 var(--wood-border);
+      2px 2px 0 var(--wood-shadow);
     padding: 10px 8px 8px;
     cursor: pointer;
     display: flex;
@@ -262,7 +264,7 @@
     font-size: 20px;
     font-weight: 900;
     color: var(--gold);
-    text-shadow: 2px 2px 0 var(--wood-border);
+    text-shadow: 2px 2px 0 var(--text-shadow);
     letter-spacing: 1px;
   }
 
@@ -286,7 +288,7 @@
     font-size: 13px;
     font-weight: 900;
     color: var(--gold);
-    text-shadow: 1px 1px 0 var(--wood-border);
+    text-shadow: 1px 1px 0 var(--text-shadow);
     display: block;
   }
   .grades-center-label .current-grade-sub {
@@ -454,7 +456,7 @@
   }
 
   .px-input {
-    background: #2a1a0a;
+    background: var(--input-bg, #2a1a0a);
     border: 2px solid var(--slot-border);
     box-shadow: inset 1px 1px 0 rgba(0,0,0,0.5);
     color: var(--text-light);
@@ -515,9 +517,9 @@
     flex: 1;
   }
   .del-cond-btn {
-    background: #5a1010;
-    border: 2px solid #3a0808;
-    color: #ff8888;
+    background: var(--delbtn-bg, #3a1010);
+    border: 2px solid var(--slot-border);
+    color: var(--gold);
     font-size: 12px;
     width: 24px;
     height: 24px;
@@ -542,10 +544,10 @@
   .add-cond-btn:hover { color: var(--gold); border-color: var(--gold); }
 
   .del-skill-btn {
-    background: #5a1010;
-    border: 2px solid #3a0808;
-    box-shadow: 1px 1px 0 var(--wood-border);
-    color: #ff8888;
+    background: var(--delbtn-bg, #3a1010);
+    border: 2px solid var(--slot-border);
+    box-shadow: 1px 1px 0 var(--wood-shadow);
+    color: var(--gold);
     font-size: 12px;
     width: 28px;
     height: 28px;
@@ -653,6 +655,25 @@
     font-size: 16px;
   }
 
+  /* ── THEME EDITOR ── */
+  .theme-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
+  .theme-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.2);
+    padding: 7px 10px;
+    border: 1px solid var(--slot-border);
+  }
+  .theme-label { font-size: 11px; color: var(--text-dim); font-weight: 700; }
+  .theme-color-input {
+    width: 40px; height: 28px;
+    border: 2px solid var(--slot-border);
+    background: none;
+    cursor: pointer;
+    padding: 1px;
+  }
+
   hr.px-divider {
     border: none;
     border-top: 2px solid var(--wood-border);
@@ -705,6 +726,52 @@
   <div class="edit-skill-list" id="edit-skill-list"></div>
   <button class="add-skill-btn" onclick="addSkill()">＋ 스킬 추가</button>
   <hr class="px-divider">
+  <div class="edit-section-title">🎨 테마 편집</div>
+  <div class="theme-grid" id="theme-grid">
+    <div class="theme-row">
+      <span class="theme-label">배경색</span>
+      <input type="color" class="theme-color-input" id="tc-bg" onchange="applyBgColor()">
+    </div>
+    <div class="theme-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <span class="theme-label">배경 이미지</span>
+      <div style="display:flex;gap:6px;width:100%;align-items:center">
+        <label class="px-btn accent" for="bg-img-input" style="font-size:10px;padding:4px 8px;cursor:pointer">이미지 선택</label>
+        <input type="file" id="bg-img-input" accept="image/*" onchange="applyBgImage(event)" style="display:none">
+        <button class="px-btn" onclick="removeBgImage()" style="font-size:10px;padding:4px 8px;">이미지 제거</button>
+        <span id="bg-img-name" style="font-size:9px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px">없음</span>
+      </div>
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">패널색</span>
+      <input type="color" class="theme-color-input" id="tc-panel" onchange="applyTheme()">
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">버튼색</span>
+      <input type="color" class="theme-color-input" id="tc-btn" onchange="applyTheme()">
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">테두리색</span>
+      <input type="color" class="theme-color-input" id="tc-border" onchange="applyTheme()">
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">그림자색</span>
+      <input type="color" class="theme-color-input" id="tc-shadow" onchange="applyTheme()">
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">글자 그림자색</span>
+      <input type="color" class="theme-color-input" id="tc-textshadow" onchange="applyTheme()">
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">글자색 (1)</span>
+      <input type="color" class="theme-color-input" id="tc-title" onchange="applyTheme()">
+    </div>
+    <div class="theme-row">
+      <span class="theme-label">글자색 (2)</span>
+      <input type="color" class="theme-color-input" id="tc-skillname" onchange="applyTheme()">
+    </div>
+  </div>
+  <button class="add-skill-btn" onclick="resetTheme()" style="margin-top:8px;color:#aaa;border-color:#666">↩ 테마 초기화</button>
+  <hr class="px-divider">
   <div class="edit-section-title">💾 데이터</div>
   <div class="io-row">
     <button class="px-btn accent" onclick="saveData()">JSON 저장</button>
@@ -727,99 +794,75 @@ function gradeEmoji(idx) {
 
 const DEFAULT_SKILLS = [
   {
-    id: 's1', name: '주식', icon: '📈',
+    id: 's1', name: '명상', icon: '🧘',
     currentGrade: -1,
     grades: [
-      { name: '비기너', conditions: ['기본 주식 개념 이해 (시가총액, PER, PBR 등)', '증권계좌 개설 및 HTS/MTS 조작 가능'] },
-      { name: '최하급', conditions: ['기법 및 이론 숙지 (이동평균선, 캔들 기초)', '손실 시 대응 방안 숙지'] },
-      { name: '하급', conditions: ['기술적 분석 실전 적용 가능', '섹터별 종목 특성 파악', '손절 원칙 지키며 매매 가능'] },
-      { name: '중급', conditions: ['거시 지표와 주가 흐름 연결 분석', '실전 매매에서 꾸준한 수익 창출', '매매일지 기록 및 복기 습관화'] },
-      { name: '상급', conditions: ['자체 매매 전략 체계 구축', '시장 사이클 분석 및 대응 가능', '리스크 관리 고도화'] },
-      { name: '마스터리', conditions: ['독자적 투자 철학 완성', '멀티 타임프레임 통합 분석', '모든 시장 국면 대응 가능'] },
+      { name: '비기너', conditions: ['(예시) 명상이 무엇인지 기본 개념 이해', '(예시) 유튜브·앱으로 가이드 명상 1회 경험'] },
+      { name: '최하급', conditions: ['(예시) 매일 5분 호흡 명상 2주 이상 지속', '(예시) 명상과 일반 휴식의 차이 체감'] },
+      { name: '하급', conditions: ['(예시) 가이드 없이 10분 이상 독립 명상 가능', '(예시) 명상 후 감정·컨디션 변화 스스로 인지'] },
+      { name: '중급', conditions: ['(예시) 하루 20분 이상 꾸준한 명상 루틴 정착', '(예시) 바디스캔·마음챙김 등 다양한 기법 활용'] },
+      { name: '상급', conditions: ['(예시) 일상 속 마음챙김 자연스럽게 적용', '(예시) 스트레스 상황에서 즉각적 명상 활용 가능'] },
+      { name: '마스터리', conditions: ['(예시) 명상이 삶의 방식으로 완전히 내재화', '(예시) 주변인에게 명상을 자연스럽게 안내 가능'] },
     ]
   },
   {
-    id: 's2', name: '선물', icon: '📊',
+    id: 's2', name: '요리', icon: '🍳',
     currentGrade: -1,
     grades: [
-      { name: '비기너', conditions: ['선물 기본 구조 이해 (만기, 롤오버)', '레버리지 개념 및 위험성 인지'] },
-      { name: '최하급', conditions: ['선물 호가창 및 체결 방식 이해', '증거금 및 청산 구조 파악'] },
-      { name: '하급', conditions: ['기본 선물 매매 전략 실전 적용', '변동성 관리 가능'] },
-      { name: '중급', conditions: ['헤징 전략 이해 및 활용', '옵션과 선물의 연계 분석'] },
-      { name: '상급', conditions: ['고급 선물 전략 운용', '시장 유동성 분석 가능'] },
-      { name: '마스터리', conditions: ['선물 시장 전체 구조 통달', '독자 선물 전략 시스템 운용'] },
+      { name: '비기너', conditions: ['(예시) 라면·계란후라이 등 초간단 요리 가능', '(예시) 기본 조리도구 사용법 이해'] },
+      { name: '최하급', conditions: ['(예시) 레시피 보고 기본 한식 3가지 이상 조리', '(예시) 칼질·불 조절 기초 습득'] },
+      { name: '하급', conditions: ['(예시) 레시피 없이 간단한 요리 자유롭게 가능', '(예시) 냉장고 재료로 즉흥 요리 시도 가능'] },
+      { name: '중급', conditions: ['(예시) 손님 초대 요리 3가지 이상 완성 가능', '(예시) 간·조리 시간 감각적으로 조절 가능'] },
+      { name: '상급', conditions: ['(예시) 한식·양식·중식 중 한 분야 심화 숙달', '(예시) 본인만의 레시피 개발 경험'] },
+      { name: '마스터리', conditions: ['(예시) 재료 보고 즉흥으로 코스 구성 가능', '(예시) 요리를 통해 타인에게 꾸준히 즐거움 제공'] },
     ]
   },
   {
-    id: 's3', name: '옵션', icon: '🎯',
+    id: 's3', name: '클라이밍', icon: '🧗',
     currentGrade: -1,
     grades: [
-      { name: '비기너', conditions: ['콜/풋 개념 이해', '프리미엄 구조 기초 파악'] },
-      { name: '최하급', conditions: ['그릭스(델타·감마·세타·베가) 개념 숙지', '기본 옵션 매수 전략 이해'] },
-      { name: '하급', conditions: ['수직 스프레드 전략 실전 적용', '내재 변동성 개념 활용'] },
-      { name: '중급', conditions: ['복합 전략 운용 (스트래들, 아이언콘도르 등)', '변동성 곡면 분석 가능'] },
-      { name: '상급', conditions: ['포지션 델타 헤징 실시간 관리', '고급 옵션 구조 설계'] },
-      { name: '마스터리', conditions: ['옵션 시장 전체 매커니즘 통달', '독자 옵션 전략 시스템 완성'] },
+      { name: '비기너', conditions: ['(예시) 클라이밍 기본 안전 수칙 숙지', '(예시) 초급 홀드 잡는 법·발 디딤 기초 이해'] },
+      { name: '최하급', conditions: ['(예시) 실내 암장 5급 루트 완등 경험', '(예시) 하강 및 빌레이 기초 습득'] },
+      { name: '하급', conditions: ['(예시) 4급 루트 안정적으로 완등', '(예시) 발 기술·무게 중심 이동 의식적으로 활용'] },
+      { name: '중급', conditions: ['(예시) 3급 루트 도전 및 완등', '(예시) 루트 리딩(동선 읽기) 가능'] },
+      { name: '상급', conditions: ['(예시) 2급 이상 루트 완등', '(예시) 실외 암벽 입문 경험'] },
+      { name: '마스터리', conditions: ['(예시) 1급 이상 루트 완등', '(예시) 리드 클라이밍 자유롭게 가능'] },
     ]
   },
   {
-    id: 's4', name: '계좌관리', icon: '💼',
+    id: 's4', name: '영어회화', icon: '💬',
     currentGrade: -1,
     grades: [
-      { name: '비기너', conditions: ['계좌 종류 및 세금 구조 기본 이해'] },
-      { name: '최하급', conditions: ['포지션 사이징 기초 적용', '계좌별 목적 분리 인지'] },
-      { name: '하급', conditions: ['3계좌 시스템 운용', '리스크 비율 지켜 매매'] },
-      { name: '중급', conditions: ['자산배분 전략 수립 및 적용', '세금 최적화 기초 (손익 통산 등)'] },
-      { name: '상급', conditions: ['전략별 계좌 고도화 운용', '수익 곡선 분석 및 드로다운 관리'] },
-      { name: '마스터리', conditions: ['포트폴리오 전체 자산 통합 관리', '세금·리스크·수익 삼박자 최적화'] },
+      { name: '비기너', conditions: ['(예시) 기본 인사·자기소개 영어로 가능', '(예시) 영어 공부 루틴 시작'] },
+      { name: '최하급', conditions: ['(예시) 여행 영어(길 묻기·주문 등) 가능', '(예시) 영어 유튜브 쉬운 영상 자막 없이 50% 이해'] },
+      { name: '하급', conditions: ['(예시) 외국인과 간단한 일상 대화 10분 이상 유지', '(예시) 영어로 이메일·문자 작성 가능'] },
+      { name: '중급', conditions: ['(예시) 업무·학업 관련 주제 영어로 토론 가능', '(예시) 영어 영상 자막 없이 80% 이상 이해'] },
+      { name: '상급', conditions: ['(예시) 원어민과 자연스러운 대화 유지', '(예시) 영어로 발표·설명 가능'] },
+      { name: '마스터리', conditions: ['(예시) 영어로 생각하고 즉각 표현 가능', '(예시) 언어 장벽 없이 모든 주제 소통 가능'] },
     ]
   },
   {
-    id: 's5', name: '국제정세', icon: '🌍',
+    id: 's5', name: '운전', icon: '🚗',
     currentGrade: -1,
     grades: [
-      { name: '비기너', conditions: ['주요 국가 및 기관 기초 파악 (연준, IMF 등)'] },
-      { name: '최하급', conditions: ['지정학적 리스크가 시장에 미치는 영향 인지', '주요 국제 뉴스 해석 가능'] },
-      { name: '하급', conditions: ['국제 정세 변화와 섹터/자산군 연결 분석', '제재·무역 이슈 시장 영향 파악'] },
-      { name: '중급', conditions: ['패권 경쟁 구도 분석 (미·중 관계 등)', '정세 변화에 따른 포지션 대응 가능'] },
-      { name: '상급', conditions: ['지정학 사이클 분석 체계 보유', '정세 선행 지표 도출 가능'] },
-      { name: '마스터리', conditions: ['국제 정세 흐름을 투자 체계에 완전 통합', '독자 국제 정세 프레임워크 완성'] },
+      { name: '비기너', conditions: ['(예시) 운전면허 필기 합격', '(예시) 기어·계기판 등 기본 구조 이해'] },
+      { name: '최하급', conditions: ['(예시) 운전면허 취득', '(예시) 조수석 동승자 있을 때 간단한 코스 운전 가능'] },
+      { name: '하급', conditions: ['(예시) 혼자 근거리 시내 주행 가능', '(예시) 기본 주차(직각·평행) 가능'] },
+      { name: '중급', conditions: ['(예시) 고속도로·장거리 운전 부담 없이 가능', '(예시) 좁은 골목·지하 주차장 주차 가능'] },
+      { name: '상급', conditions: ['(예시) 야간·우천 시에도 안정적 주행', '(예시) 처음 가는 길도 침착하게 주행'] },
+      { name: '마스터리', conditions: ['(예시) 어떤 도로·날씨 조건에서도 안전 운전', '(예시) 동승자가 완전히 편안함을 느끼는 수준'] },
     ]
   },
   {
-    id: 's6', name: '거시경제', icon: '📉',
+    id: 's6', name: '수영', icon: '🏊',
     currentGrade: -1,
     grades: [
-      { name: '비기너', conditions: ['GDP, 인플레이션, 금리 기초 개념 이해'] },
-      { name: '최하급', conditions: ['주요 경제 지표 발표 일정 및 해석 가능', '경기 사이클 4국면 개념 숙지'] },
-      { name: '하급', conditions: ['지표와 자산 가격 흐름 연결 분석 가능', '통화 정책 방향 예측 시도'] },
-      { name: '중급', conditions: ['경기 사이클 상 현재 국면 판단 가능', '선행·동행·후행 지표 통합 분석'] },
-      { name: '상급', conditions: ['매크로 분석 기반 중장기 포지션 수립', '금리·환율·상품 삼각 분석 가능'] },
-      { name: '마스터리', conditions: ['독자적 거시 분석 프레임 완성', 'HG↔FM 연결 통합 분석 체계 운용'] },
-    ]
-  },
-  {
-    id: 's7', name: '산업과기업', icon: '🏭',
-    currentGrade: -1,
-    grades: [
-      { name: '비기너', conditions: ['주요 산업 분류 및 특성 기초 이해'] },
-      { name: '최하급', conditions: ['섹터 로테이션 개념 이해', '기업 재무제표 기초 독해'] },
-      { name: '하급', conditions: ['산업 사이클과 기업 실적 연결 분석', '경쟁 구도 및 시장 지위 파악'] },
-      { name: '중급', conditions: ['섹터별 선행 지표 활용 가능', '기업 밸류에이션 독자 산출'] },
-      { name: '상급', conditions: ['산업 구조 변화 선제 포착 가능', '기업 퀄리티 분석 체계화'] },
-      { name: '마스터리', conditions: ['산업·기업 분석을 매크로 프레임과 완전 통합', '독자 섹터 전략 시스템 완성'] },
-    ]
-  },
-  {
-    id: 's8', name: '기록', icon: '📝',
-    currentGrade: -1,
-    grades: [
-      { name: '비기너', conditions: ['매매 기록 습관 시작'] },
-      { name: '최하급', conditions: ['매매일지 꾸준히 작성', '기본 복기 루틴 보유'] },
-      { name: '하급', conditions: ['복기 통해 패턴 오류 발견', '슈퍼예측가식 저널링 적용'] },
-      { name: '중급', conditions: ['기록 기반 전략 개선 사이클 완성', '오류 유형 분류 및 교정'] },
-      { name: '상급', conditions: ['기록 시스템이 투자 판단 교정 도구로 작동', '옵시디언 등 체계적 지식 관리 운용'] },
-      { name: '마스터리', conditions: ['기록 시스템 완전 내재화', '메타인지 기반 지속 자기 교정 체계 완성'] },
+      { name: '비기너', conditions: ['(예시) 물에 대한 공포 극복·물 적응', '(예시) 발차기·호흡 기초 연습'] },
+      { name: '최하급', conditions: ['(예시) 자유형 25m 완주', '(예시) 배영 기초 습득'] },
+      { name: '하급', conditions: ['(예시) 자유형 100m 쉬지 않고 완주', '(예시) 평영 기초 습득'] },
+      { name: '중급', conditions: ['(예시) 자유형·배영·평영 모두 50m 이상 가능', '(예시) 접영 기초 도전'] },
+      { name: '상급', conditions: ['(예시) 4가지 영법 모두 100m 이상 가능', '(예시) 1km 이상 장거리 수영 가능'] },
+      { name: '마스터리', conditions: ['(예시) 오픈워터 수영 경험', '(예시) 수영이 완전한 생활 체력 루틴으로 정착'] },
     ]
   },
 ];
@@ -1029,6 +1072,7 @@ function toggleEdit() {
     btn.classList.add('edit-active');
     panel.classList.add('active');
     renderEditPanel();
+    loadTheme();
     // Close detail if open
     closeDetail();
   } else {
@@ -1175,6 +1219,200 @@ function loadData(e) {
   e.target.value = '';
 }
 
+function applyBgColor() {
+  // 배경색 변경은 이미지가 없을 때만 배경에 반영
+  if (!state.theme) state.theme = { ...DEFAULT_THEME };
+  state.theme.bg = document.getElementById('tc-bg').value;
+  if (!state.theme.bgImage) {
+    document.body.style.background = state.theme.bg;
+  }
+  autoSave();
+}
+
+function applyBgImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const dataUrl = ev.target.result;
+    document.body.style.backgroundImage = `url(${dataUrl})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    if (!state.theme) state.theme = { ...DEFAULT_THEME };
+    state.theme.bgImage = dataUrl;
+    document.getElementById('bg-img-name').textContent = file.name;
+    autoSave();
+    showToast('배경 이미지 적용 완료');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeBgImage() {
+  document.body.style.backgroundImage = '';
+  document.body.style.backgroundSize = '';
+  document.body.style.backgroundPosition = '';
+  document.body.style.backgroundAttachment = '';
+  document.body.style.background = document.getElementById('tc-bg').value;
+  if (state.theme) delete state.theme.bgImage;
+  document.getElementById('bg-img-name').textContent = '없음';
+  document.getElementById('bg-img-input').value = '';
+  autoSave();
+  showToast('배경 이미지 제거됨');
+}
+
+// ── THEME ──
+const DEFAULT_THEME = {
+  bg: '#1a1008',
+  panel: '#a06030',
+  btn: '#6b4423',
+  border: '#2a1a0e',
+  shadow: '#0d0804',
+  textshadow: '#0d0804',
+  title: '#f5c842',
+  skillname: '#f5e6c8',
+};
+
+function applyTheme() {
+  const t = {
+    bg: document.getElementById('tc-bg').value,
+    panel: document.getElementById('tc-panel').value,
+    btn: document.getElementById('tc-btn').value,
+    border: document.getElementById('tc-border').value,
+    shadow: document.getElementById('tc-shadow').value,
+    textshadow: document.getElementById('tc-textshadow').value,
+    title: document.getElementById('tc-title').value,
+    skillname: document.getElementById('tc-skillname').value,
+  };
+  if (!state.theme) state.theme = {};
+  // 배경 이미지 보존
+  const bgImage = state.theme.bgImage;
+  state.theme = { ...t };
+  if (bgImage) state.theme.bgImage = bgImage;
+
+  _applyThemeVars(t);
+  // 배경색은 이미지 없을 때만
+  if (!bgImage) document.body.style.background = t.bg;
+  autoSave();
+}
+
+function _applyThemeVars(t) {
+  const root = document.documentElement.style;
+  root.setProperty('--wood-panel', t.panel);
+  root.setProperty('--wood-panel-light', lighten(t.panel, 15));
+  root.setProperty('--wood-mid', t.btn);
+  root.setProperty('--wood-light', lighten(t.btn, 15));
+  root.setProperty('--wood-dark', darken(t.btn, 20));
+  // 슬롯 = 버튼보다 어둡게
+  root.setProperty('--slot-bg', darken(t.btn, 15));
+  root.setProperty('--slot-inner', darken(t.btn, 25));
+  root.setProperty('--slot-border', darken(t.border, 5));
+  // 입력칸 = 버튼보다 어둡게
+  root.setProperty('--input-bg', darken(t.btn, 20));
+  // X버튼 = 입력칸보다 더 어둡게
+  root.setProperty('--delbtn-bg', darken(t.btn, 30));
+  // 테두리
+  root.setProperty('--wood-border', t.border);
+  root.setProperty('--wood-shadow', t.shadow || darken(t.border, 15));
+  root.setProperty('--text-shadow', t.textshadow || darken(t.border, 15));
+  // 글자
+  root.setProperty('--gold', t.title);
+  root.setProperty('--text-light', t.skillname);
+  root.setProperty('--text-dim', darken(t.skillname, 20));
+  // 마스터리 슬롯도 버튼색 기준으로 동적 업데이트
+  updateMasteryStyle(t);
+}
+
+function updateMasteryStyle(t) {
+  let styleEl = document.getElementById('dynamic-mastery-style');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'dynamic-mastery-style';
+    document.head.appendChild(styleEl);
+  }
+  const base = lighten(t.btn, 20);
+  styleEl.textContent = `
+    .skill-slot.mastered {
+      background: ${base} !important;
+      border-color: #f5c842 !important;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,240,120,0.6),
+        inset 2px 2px 0 rgba(255,245,160,0.35),
+        inset -2px -2px 0 rgba(0,0,0,0.4),
+        2px 2px 0 ${t.border},
+        0 0 14px rgba(255,200,40,0.45) !important;
+    }
+  `;
+}
+
+function loadTheme() {
+  const t = state.theme || DEFAULT_THEME;
+  const el = id => document.getElementById(id);
+  if (el('tc-bg')) el('tc-bg').value = t.bg || DEFAULT_THEME.bg;
+  if (el('tc-panel')) el('tc-panel').value = t.panel || DEFAULT_THEME.panel;
+  if (el('tc-btn')) el('tc-btn').value = t.btn || DEFAULT_THEME.btn;
+  if (el('tc-border')) el('tc-border').value = t.border || DEFAULT_THEME.border;
+  if (el('tc-title')) el('tc-title').value = t.title || DEFAULT_THEME.title;
+  if (el('tc-skillname')) el('tc-skillname').value = t.skillname || DEFAULT_THEME.skillname;
+
+  if (el('tc-shadow')) el('tc-shadow').value = t.shadow || DEFAULT_THEME.shadow;
+  if (el('tc-textshadow')) el('tc-textshadow').value = t.textshadow || DEFAULT_THEME.textshadow;
+
+  const merged = {
+    bg: t.bg || DEFAULT_THEME.bg,
+    panel: t.panel || DEFAULT_THEME.panel,
+    btn: t.btn || DEFAULT_THEME.btn,
+    border: t.border || DEFAULT_THEME.border,
+    shadow: t.shadow || DEFAULT_THEME.shadow,
+    textshadow: t.textshadow || DEFAULT_THEME.textshadow,
+    title: t.title || DEFAULT_THEME.title,
+    skillname: t.skillname || DEFAULT_THEME.skillname,
+  };
+  _applyThemeVars(merged);
+
+  if (t.bgImage) {
+    document.body.style.backgroundImage = `url(${t.bgImage})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    if (el('bg-img-name')) el('bg-img-name').textContent = '저장된 이미지';
+  } else {
+    document.body.style.backgroundImage = '';
+    document.body.style.background = merged.bg;
+  }
+}
+
+function id(s) { return document.getElementById(s); }
+
+function resetTheme() {
+  state.theme = { ...DEFAULT_THEME };
+  document.body.style.backgroundImage = '';
+  const name = document.getElementById('bg-img-name');
+  if (name) name.textContent = '없음';
+  const inp = document.getElementById('bg-img-input');
+  if (inp) inp.value = '';
+  loadTheme();
+  autoSave();
+  showToast('테마 초기화 완료');
+}
+
+function lighten(hex, amt) {
+  return shiftColor(hex, amt);
+}
+function darken(hex, amt) {
+  return shiftColor(hex, -amt);
+}
+function shiftColor(hex, amt) {
+  try {
+    let c = hex.replace('#','');
+    if (c.length === 3) c = c.split('').map(x=>x+x).join('');
+    let r = Math.min(255, Math.max(0, parseInt(c.substr(0,2),16) + amt));
+    let g = Math.min(255, Math.max(0, parseInt(c.substr(2,2),16) + amt));
+    let b = Math.min(255, Math.max(0, parseInt(c.substr(4,2),16) + amt));
+    return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+  } catch { return hex; }
+}
+
 // ── TOAST ──
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1190,6 +1428,7 @@ function escHtml(str) {
 
 // ── INIT ──
 autoLoad();
+loadTheme();
 renderGrid();
 
 // ── PWA SERVICE WORKER ──
