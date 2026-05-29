@@ -405,6 +405,27 @@
     font-size: 9px;
     top: 1px;
   }
+  .grade-info-list li.cond-checked {
+    color: #a09070;
+    text-decoration: line-through;
+    opacity: 0.75;
+    cursor: pointer;
+  }
+  .grade-info-list li.cond-checked::before {
+    content: '✓';
+    color: #88cc44;
+    font-size: 10px;
+  }
+  .grade-info-list li:not(.cond-checked) {
+    cursor: pointer;
+  }
+  .grade-info-list li:not(.cond-checked):hover {
+    color: var(--text-light);
+  }
+  .grade-info-list li:not(.cond-checked):hover::before {
+    content: '▸';
+    color: #88cc44;
+  }
   .grade-info-hint {
     font-size: 10px;
     color: var(--inactive);
@@ -1062,11 +1083,27 @@ function updateGradeInfo(skill, idx) {
   titleEl.textContent = grade.name + (isActive ? ' ✓ 달성' : ' — 달성 조건');
   titleEl.style.color = gradeColor(idx);
   listEl.innerHTML = '';
-  (grade.conditions || []).forEach(c => {
+
+  // 체크 상태 저장소 초기화
+  if (!skill.checks) skill.checks = {};
+  const gradeKey = `g${idx}`;
+  if (!skill.checks[gradeKey]) skill.checks[gradeKey] = {};
+
+  (grade.conditions || []).forEach((c, ci) => {
     const li = document.createElement('li');
     li.textContent = c;
+    const isChecked = !!skill.checks[gradeKey][ci];
+    if (isChecked) li.classList.add('cond-checked');
+
+    li.addEventListener('click', () => {
+      playSound('button');
+      skill.checks[gradeKey][ci] = !skill.checks[gradeKey][ci];
+      li.classList.toggle('cond-checked');
+      autoSave();
+    });
     listEl.appendChild(li);
   });
+
   hintEl.textContent = isActive ? '다시 클릭하면 해제됩니다' : '클릭하면 이 등급이 활성화됩니다';
   hintEl.style.color = isActive ? '#ff8888' : '#88cc44';
   hintEl.onclick = null;
