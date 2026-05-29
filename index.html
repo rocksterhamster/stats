@@ -966,6 +966,7 @@ function onGradeClick(skillId, idx) {
   renderGradeCircle(skill);
   updateGradeInfo(skill, skill.currentGrade);
   renderGrid();
+  autoSave();
   showToast(skill.currentGrade >= 0 ? `${skill.grades[skill.currentGrade]?.name} 달성! 🎉` : '등급 초기화');
 }
 
@@ -1034,6 +1035,7 @@ function toggleEdit() {
     btn.textContent = '✏ 편집';
     btn.classList.remove('edit-active');
     panel.classList.remove('active');
+    autoSave();
     renderGrid();
   }
 }
@@ -1122,7 +1124,27 @@ function addSkill() {
 }
 
 // ── SAVE / LOAD ──
+const STORAGE_KEY = 'stats-app-data';
+
+function autoSave() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+
+function autoLoad() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      state = JSON.parse(saved);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
 function saveData() {
+  // JSON 백업 파일로 내보내기
   const json = JSON.stringify(state, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1131,7 +1153,7 @@ function saveData() {
   a.download = 'skill-data.json';
   a.click();
   URL.revokeObjectURL(url);
-  showToast('💾 skill-data.json 저장 완료');
+  showToast('💾 백업 파일 저장 완료');
 }
 function loadData(e) {
   const file = e.target.files[0];
@@ -1141,6 +1163,7 @@ function loadData(e) {
     try {
       const loaded = JSON.parse(ev.target.result);
       state = loaded;
+      autoSave();
       renderGrid();
       if (editMode) renderEditPanel();
       showToast('✓ 데이터 불러오기 완료');
@@ -1166,6 +1189,7 @@ function escHtml(str) {
 }
 
 // ── INIT ──
+autoLoad();
 renderGrid();
 
 // ── PWA SERVICE WORKER ──
